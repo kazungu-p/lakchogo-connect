@@ -1,122 +1,82 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import TopBar from "./components/TopBar";
+import Login from "./views/Login";
+import Dashboard from "./views/Dashboard";
+import Members from "./views/Members";
+import Payments from "./views/Payments";
+import Bereavement from "./views/Bereavement";
+import Compliance from "./views/Compliance";
+import Meetings from "./views/Meetings";
+import MemberHome from "./views/member/MemberHome";
+import { COLORS } from "./constants/colors";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { overallStatus } from "./utils/status";
 
-function App() {
-  const [count, setCount] = useState(0)
+function AdminApp() {
+  const { members } = useAuth();
+  const [view, setView] = useState("dashboard");
+  const [query, setQuery] = useState("");
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const overdueCount = members.filter((m) => overallStatus(m) === "overdue").length;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div
+      style={{ background: COLORS.bg, color: COLORS.text, fontFamily: "Inter, sans-serif", minHeight: "700px" }}
+      className="w-full rounded-2xl overflow-hidden flex"
+    >
+      <Sidebar
+        view={view}
+        setView={setView}
+        overdueCount={overdueCount}
+        mobileOpen={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
+      />
 
-      <div className="ticks"></div>
+      <main className="flex-1 flex flex-col min-w-0">
+        <TopBar query={query} setQuery={setQuery} onMenuClick={() => setMobileNavOpen(true)} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+        <div className="flex-1 overflow-auto p-4 sm:p-6">
+          {view === "dashboard" && <Dashboard setView={setView} setSelectedMember={setSelectedMember} />}
+          {view === "members" && (
+            <Members query={query} selectedMember={selectedMember} setSelectedMember={setSelectedMember} />
+          )}
+          {view === "payments" && <Payments />}
+          {view === "bereavement" && <Bereavement />}
+          {view === "compliance" && <Compliance />}
+          {view === "meetings" && <Meetings />}
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </main>
+    </div>
+  );
 }
 
-export default App
+function MemberApp() {
+  return (
+    <div
+      style={{ background: COLORS.bg, color: COLORS.text, fontFamily: "Inter, sans-serif", minHeight: "700px" }}
+      className="w-full rounded-2xl overflow-hidden flex flex-col"
+    >
+      <TopBar showSearch={false} />
+      <div className="flex-1 overflow-auto p-4 sm:p-6">
+        <MemberHome />
+      </div>
+    </div>
+  );
+}
+
+function Shell() {
+  const { currentUser } = useAuth();
+  if (!currentUser) return <Login />;
+  return currentUser.role === "admin" ? <AdminApp /> : <MemberApp />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Shell />
+    </AuthProvider>
+  );
+}
