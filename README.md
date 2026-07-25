@@ -28,11 +28,18 @@ Demo accounts (also available as one-tap buttons on the login screen):
 
 - **Admins** (Chairperson, Treasurer, Welfare Officer) see the full app:
   dashboard, all members, payments ledger, bereavement fund, compliance
-  scorecard, meetings, and can add new members — including other admins —
-  via the "Add member" button on the Members page.
+  scorecard, meetings, and can:
+  - add new members — including other admins — via "Add member"
+  - record a payment for any member (cash, bank, manual M-Pesa/Airtel
+    entry) from the Payments page or a member's profile
+  - suspend, reactivate, or remove a member from a member's profile.
+    Removing is a **soft delete** — the record and history stay, the
+    member just drops off the active roster and out of compliance stats.
 - **Members** only see their own profile, payment status, and general
   group info (fund progress, next meeting). They can't see other members'
-  records.
+  records, and can pay any due/overdue category themselves via **Pay now**
+  — a simulated M-Pesa STK push flow (no real Daraja integration yet,
+  since that needs a backend).
 
 ## Project structure
 
@@ -56,6 +63,9 @@ src/
     Sidebar.jsx          — desktop column + mobile slide-over drawer
     TopBar.jsx           — responsive; mobile search toggle, logout
     AddMemberModal.jsx   — admin-only "add member" form
+    RecordPaymentModal.jsx — admin/treasurer logs an offline payment
+    PayNowModal.jsx      — member self-service (simulated M-Pesa STK push)
+    MemberStatusBadge.jsx — active / suspended / removed badge
   views/
     Login.jsx
     Dashboard.jsx
@@ -89,9 +99,16 @@ browser or use dev tools' device toolbar to check the common breakpoints.
 1. Swap `src/data/*.js` and the mock `AuthContext` for real API calls
    (a `src/api/` folder), once a backend exists — including real password
    hashing and session tokens, never plain-text passwords.
-2. Add `react-router-dom` for real URLs per view instead of in-memory
+2. Replace the simulated STK push in `PayNowModal.jsx` with a real Daraja
+   API call from the backend (this UI already models the expected steps:
+   amount → push sent → confirmation).
+3. Add `react-router-dom` for real URLs per view instead of in-memory
    `view` state.
-3. Wire up M-Pesa Daraja API and Africa's Talking SMS on the backend.
-4. Expand roles beyond the current Admin/Member binary if you want
+4. Wire up Africa's Talking SMS for compliance/welfare-block alerts.
+5. Expand roles beyond the current Admin/Member binary if you want
    granular permissions per committee position (e.g. only Treasurer can
    record payments, only Secretary can post minutes).
+6. Loans, insurance, and share capital are a materially bigger, SASRA-
+   regulated scope — treat as a later phase, likely integrating with
+   Ramogi Sacco's core banking system rather than rebuilding inside this
+   welfare app.

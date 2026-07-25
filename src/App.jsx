@@ -20,7 +20,7 @@ function AdminApp() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const overdueCount = members.filter((m) => overallStatus(m) === "overdue").length;
+  const overdueCount = members.filter((m) => m.memberStatus === "active" && overallStatus(m) === "overdue").length;
 
   return (
     <div

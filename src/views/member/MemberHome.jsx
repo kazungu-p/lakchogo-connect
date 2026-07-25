@@ -1,8 +1,9 @@
-import React from "react";
-import { Phone, Calendar, HeartHandshake, ShieldAlert } from "lucide-react";
+import React, { useState } from "react";
+import { Phone, Calendar, HeartHandshake, ShieldAlert, Smartphone } from "lucide-react";
 import Card from "../../components/Card";
 import Pill from "../../components/Pill";
 import ComplianceRing from "../../components/ComplianceRing";
+import PayNowModal from "../../components/PayNowModal";
 import { COLORS } from "../../constants/colors";
 import { CATEGORIES } from "../../constants/categories";
 import { useAuth } from "../../context/AuthContext";
@@ -14,6 +15,7 @@ import { overallStatus } from "../../utils/status";
 // members' records.
 export default function MemberHome() {
   const { currentUser } = useAuth();
+  const [payCategory, setPayCategory] = useState(null);
   const status = overallStatus(currentUser);
   const bereavementCurrent = BEREAVEMENT_HISTORY[BEREAVEMENT_HISTORY.length - 1].amount;
   const pct = Math.round((bereavementCurrent / BEREAVEMENT_TARGET) * 100);
@@ -56,13 +58,28 @@ export default function MemberHome() {
 
       <Card className="p-5">
         <div className="text-xs uppercase tracking-wide mb-3" style={{ color: COLORS.muted }}>Your payment categories</div>
-        <div className="flex flex-col gap-2">
-          {CATEGORIES.map((c) => (
-            <div key={c} className="flex items-center justify-between text-sm">
-              <span>{c}</span>
-              <Pill status={currentUser.status[c]} />
-            </div>
-          ))}
+        <div className="flex flex-col gap-2.5">
+          {CATEGORIES.map((c) => {
+            const s = currentUser.status[c];
+            const needsPay = s === "due" || s === "overdue";
+            return (
+              <div key={c} className="flex items-center justify-between text-sm gap-3">
+                <span>{c}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Pill status={s} />
+                  {needsPay ? (
+                    <button
+                      onClick={() => setPayCategory(c)}
+                      style={{ background: COLORS.gold, color: "#14231F" }}
+                      className="flex items-center gap-1 text-xs font-medium rounded-full px-2.5 py-1 hover:opacity-90"
+                    >
+                      <Smartphone size={11} /> Pay now
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Card>
 
@@ -92,6 +109,8 @@ export default function MemberHome() {
       <div className="text-center text-sm" style={{ color: COLORS.muted }}>
         Meeting attendance rate: <span style={{ fontFamily: "IBM Plex Mono, monospace", color: COLORS.text }}>{currentUser.attendance}%</span>
       </div>
+
+      {payCategory ? <PayNowModal category={payCategory} onClose={() => setPayCategory(null)} /> : null}
     </div>
   );
 }

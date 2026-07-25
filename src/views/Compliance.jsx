@@ -7,7 +7,8 @@ import { useAuth } from "../context/AuthContext";
 import { statusColor, overallStatus } from "../utils/status";
 
 export default function Compliance() {
-  const { members } = useAuth();
+  const { members: allMembers } = useAuth();
+  const members = allMembers.filter((m) => m.memberStatus === "active");
 
   return (
     <Card className="p-0 overflow-hidden">

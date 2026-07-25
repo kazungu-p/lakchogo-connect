@@ -5,11 +5,12 @@ import Card from "../components/Card";
 import ComplianceRing from "../components/ComplianceRing";
 import { COLORS } from "../constants/colors";
 import { useAuth } from "../context/AuthContext";
-import { BEREAVEMENT_HISTORY, BEREAVEMENT_TARGET, RECENT_PAYMENTS } from "../data/payments";
+import { BEREAVEMENT_HISTORY, BEREAVEMENT_TARGET } from "../data/payments";
 import { overallStatus } from "../utils/status";
 
 export default function Dashboard({ setView, setSelectedMember }) {
-  const { members, currentUser } = useAuth();
+  const { members: allMembers, payments, currentUser } = useAuth();
+  const members = allMembers.filter((m) => m.memberStatus === "active");
 
   const compliantCount = members.filter((m) => overallStatus(m) === "paid").length;
   const dueCount = members.filter((m) => overallStatus(m) === "due").length;
@@ -78,8 +79,8 @@ export default function Dashboard({ setView, setSelectedMember }) {
         <Card className="p-4 sm:p-5">
           <h2 className="text-sm font-medium mb-4">Recent payments</h2>
           <div className="flex flex-col gap-3">
-            {RECENT_PAYMENTS.map((p, i) => (
-              <div key={i} className="flex items-start justify-between text-sm gap-2">
+            {payments.slice(0, 4).map((p) => (
+              <div key={p.id} className="flex items-start justify-between text-sm gap-2">
                 <div className="min-w-0">
                   <div className="truncate">{p.member}</div>
                   <div className="text-xs truncate" style={{ color: COLORS.muted }}>{p.category} · {p.method}</div>

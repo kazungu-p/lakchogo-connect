@@ -13,6 +13,7 @@ export const MEMBERS = [
     attendance: 92,
     role: "admin",
     committeeRole: "Chairperson",
+    memberStatus: "active",
     password: "admin123",
     status: {
       "Yearly Subscription": "paid",
@@ -30,6 +31,7 @@ export const MEMBERS = [
     attendance: 68,
     role: "member",
     committeeRole: "Ordinary Member",
+    memberStatus: "active",
     password: "member123",
     status: {
       "Yearly Subscription": "paid",
@@ -47,6 +49,7 @@ export const MEMBERS = [
     attendance: 100,
     role: "admin",
     committeeRole: "Welfare Officer",
+    memberStatus: "active",
     password: "admin123",
     status: {
       "Yearly Subscription": "paid",
@@ -64,6 +67,7 @@ export const MEMBERS = [
     attendance: 41,
     role: "member",
     committeeRole: "Ordinary Member",
+    memberStatus: "active",
     password: "member123",
     status: {
       "Yearly Subscription": "overdue",
@@ -81,6 +85,7 @@ export const MEMBERS = [
     attendance: 85,
     role: "admin",
     committeeRole: "Treasurer",
+    memberStatus: "active",
     password: "admin123",
     status: {
       "Yearly Subscription": "paid",
@@ -98,6 +103,7 @@ export const MEMBERS = [
     attendance: 55,
     role: "member",
     committeeRole: "Ordinary Member",
+    memberStatus: "active",
     password: "member123",
     status: {
       "Yearly Subscription": "due",

@@ -8,7 +8,8 @@ import { useAuth } from "../context/AuthContext";
 import { BEREAVEMENT_HISTORY, BEREAVEMENT_TARGET } from "../data/payments";
 
 export default function Bereavement() {
-  const { members } = useAuth();
+  const { members: allMembers } = useAuth();
+  const members = allMembers.filter((m) => m.memberStatus === "active");
   const current = BEREAVEMENT_HISTORY[BEREAVEMENT_HISTORY.length - 1].amount;
   const pct = Math.round((current / BEREAVEMENT_TARGET) * 100);
   const contributingCount = members.filter((m) => m.status["Bereavement Fund"] === "paid").length;
